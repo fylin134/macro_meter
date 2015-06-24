@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">macro_meter</string>
 
-    <string name="hello_world">Hello world!</string>
+    <string name="checkbox_label_male">Male</string>
+    <string name="checkbox_label_female">Female</string>
+    <string name="oob_text">Please fill out the information below</string>
     <string name="action_settings">Settings</string>
 </resources>
