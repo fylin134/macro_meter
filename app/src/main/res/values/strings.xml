@@ -5,4 +5,12 @@
     <string name="checkbox_label_female">Female</string>
     <string name="oob_text">Please fill out the information below</string>
     <string name="action_settings">Settings</string>
+
+    <string-array name="activity_level">
+        <item>Sedentary</item>
+        <item>Low</item>
+        <item>Medium</item>
+        <item>High</item>
+        <item>Intense</item>
+    </string-array>
 </resources>
