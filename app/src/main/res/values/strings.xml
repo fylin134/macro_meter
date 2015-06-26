@@ -1,9 +1,21 @@
 <resources>
     <string name="app_name">macro_meter</string>
 
+    <!-- String resources for first launch activity -->
+    <string name="oob_text">Please fill out the information below</string>
+    <string name="textView_label_age">Age</string>
+    <string name="textView_hint_age">0</string>
+    <string name="textView_label_gender">Gender</string>
     <string name="checkbox_label_male">Male</string>
     <string name="checkbox_label_female">Female</string>
-    <string name="oob_text">Please fill out the information below</string>
+    <string name="textView_label_height">Height</string>
+    <string name="textView_hint_heightfeet">0 ft</string>
+    <string name="textView_hint_heightinch">0 in</string>
+    <string name="textView_label_weight">Weight</string>
+    <string name="textView_hint_weight">0 lbs</string>
+    <string name="textView_label_activity">Activity</string>
+    <string name="button_dataconfirm">Calculate Calories!</string>
+
     <string name="action_settings">Settings</string>
 
     <string-array name="activity_level">

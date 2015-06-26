@@ -12,7 +12,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Age"
+        android:text="@string/textView_label_age"
         android:id="@+id/textView_age"
         android:layout_below="@+id/textView_oob"
         android:layout_alignParentLeft="true"
@@ -22,7 +22,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Gender"
+        android:text="@string/textView_label_gender"
         android:id="@+id/textView_gender"
         android:layout_below="@+id/textView_age"
         android:layout_alignParentLeft="true"
@@ -32,7 +32,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Weight"
+        android:text="@string/textView_label_weight"
         android:id="@+id/textView_weight"
         android:layout_below="@+id/textView_gender"
         android:layout_alignParentLeft="true"
@@ -42,7 +42,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Height"
+        android:text="@string/textView_label_height"
         android:id="@+id/textView_height"
         android:layout_below="@+id/textView_weight"
         android:layout_alignParentLeft="true"
@@ -52,7 +52,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Activity"
+        android:text="@string/textView_label_activity"
         android:id="@+id/textView_activity"
         android:layout_below="@+id/textView_height"
         android:layout_alignParentLeft="true"
@@ -64,7 +64,7 @@
         android:layout_height="wrap_content"
         android:inputType="number"
         android:ems="10"
-        android:hint="0"
+        android:hint="@string/textView_hint_age"
         android:id="@+id/editText_age"
         android:layout_alignBottom="@id/textView_age"
         android:layout_marginLeft="100dp"/>
@@ -72,7 +72,7 @@
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Male"
+        android:text="@string/checkbox_label_male"
         android:id="@+id/checkBox_male"
         android:layout_alignBottom="@+id/textView_gender"
         android:layout_alignLeft="@id/editText_age"
@@ -81,7 +81,7 @@
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Female"
+        android:text="@string/checkbox_label_female"
         android:id="@+id/checkBox_female"
         android:checked="false"
         android:layout_alignBottom="@+id/checkBox_male"
@@ -93,7 +93,7 @@
         android:layout_height="wrap_content"
         android:inputType="number"
         android:ems="10"
-        android:hint="0 lbs"
+        android:hint="@string/textView_hint_weight"
         android:id="@+id/editText_weight"
         android:layout_alignBottom="@id/textView_weight"
         android:layout_marginLeft="100dp"/>
@@ -103,7 +103,7 @@
         android:layout_height="wrap_content"
         android:inputType="number"
         android:ems="10"
-        android:hint="0 ft"
+        android:hint="@string/textView_hint_heightfeet"
         android:id="@+id/editText_feet"
         android:layout_alignBottom="@id/textView_height"
         android:layout_marginLeft="100dp"/>
@@ -113,7 +113,7 @@
         android:layout_height="wrap_content"
         android:inputType="number"
         android:ems="10"
-        android:hint="0 in"
+        android:hint="@string/textView_hint_heightinch"
         android:id="@+id/editText_inches"
         android:layout_alignBottom="@id/textView_height"
         android:layout_toRightOf="@id/editText_feet"
@@ -123,7 +123,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/spinner_activity"
-        android:layout_alignBottom="@+id/textView_activity"
+        android:layout_alignTop="@+id/textView_activity"
         android:layout_alignLeft="@+id/editText_feet"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/button_dataconfirm"
+        android:text="@string/button_dataconfirm"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"/>
 
 </RelativeLayout>
