@@ -19,10 +19,21 @@
     <string name="action_settings">Settings</string>
 
     <string-array name="activity_level">
-        <item>Sedentary</item>
-        <item>Low</item>
-        <item>Medium</item>
-        <item>High</item>
-        <item>Intense</item>
+        <item>Select an activity level</item>
+        <item>Sedentary (little to no exercise)</item>
+        <item>Light (exercise/sports 1-3 times/week)</item>
+        <item>Moderate (exercise/sports 3-5 times/week)</item>
+        <item>Very Active (hard exercise/sports 6-7 times/week)</item>
+        <item>Intense (very hard exercise/sports or physical job)</item>
     </string-array>
+
+    <string-array name="activity_value">
+        <item>1</item>
+        <item>1.2</item>
+        <item>1.375</item>
+        <item>1.55</item>
+        <item>1.725</item>
+        <item>1.9</item>
+    </string-array>
+
 </resources>
