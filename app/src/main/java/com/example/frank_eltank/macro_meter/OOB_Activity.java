@@ -1,10 +1,12 @@
 package com.example.frank_eltank.macro_meter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,17 +19,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-public class MainActivity extends ActionBarActivity {
+public class OOB_Activity extends Activity {
 
     // User data
-    private String mFirstTimeLaunch = "mFirstTimeLaunch";
-    private String mAge = "mAge";
+    public static final String mFirstTimeLaunch = "mFirstTimeLaunch";
+    /*private String mAge = "mAge";
     private String mGender = "mGender";
     private String mWeight = "mWeight";
     private String mHeightFeet = "mHeightFeet";
     private String mHeightInch = "mHeightInch";
-    private String mActivity = "mActivity";
-    private String mBMR = "mBMR";
+    private String mActivity = "mActivity";*/
+    public static final String USER_BMR = "mBMR";
+    public static final String USER_CAL_MAINT = "mCalMaint";
 
     // UI Elements
     EditText mEditText_Age;
@@ -39,44 +42,52 @@ public class MainActivity extends ActionBarActivity {
     Spinner mSpinner_Activity;
     Button mConfirmButton;
 
-    private final double LB_TO_KG = 0.453592;
-    private final double IN_TO_CM = 2.54;
-    private final double MAINT_TO_LOSE1 = 0.788;
-    private final double MAINT_TO_LOSE2 = 0.576;
-    private final double MAINT_TO_GAIN1 = 1.212;
-    private final double MAINT_TO_GAIN2 = 1.424;
+    public static final double LB_TO_KG = 0.453592;
+    public static final double IN_TO_CM = 2.54;
+    //TODO: These numbers need to be determined/refined
+    public static double MAINT_TO_LOSE1 = 0.788;
+    public static double MAINT_TO_LOSE2 = 0.576;
+    public static double MAINT_TO_GAIN1 = 1.212;
+    public static double MAINT_TO_GAIN2 = 1.424;
+
+    private SharedPreferences mSettings;
+    private SharedPreferences.Editor mEditor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        loadFirstLaunchPage();
+        //loadFirstLaunchPage();
+
+        mSettings = PreferenceManager.getDefaultSharedPreferences(this);
+        mEditor = mSettings.edit();
 
         // If mFirstTimeLaunch doesn't exist, then we get a default true value
         // otherwise it will be false in SharedPrefs
-       /* SharedPreferences settings = getPreferences(Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = settings.edit();
-        if(settings.getBoolean(mFirstTimeLaunch, true)){
+        if(mSettings.getBoolean(mFirstTimeLaunch, true)){
 
-            editor.putBoolean(mFirstTimeLaunch, false);
-            editor.commit();
+            mEditor.putBoolean(mFirstTimeLaunch, false);
+            mEditor.commit();
 
             loadFirstLaunchPage();
         }
         // Render default main activity layout
         else{
-            loadMainPage();
+            Intent intent = new Intent(getBaseContext(), JournalActivity.class);
+            startActivity(intent);
         }
-        */
     }
 
     private void displayMissingFieldToast(){
         Toast.makeText(getApplicationContext(), "Please fill in the missing fields", Toast.LENGTH_SHORT).show();
     }
 
+    /***
+     * Loads the OOB launch questionnaire
+     */
     private void loadFirstLaunchPage(){
         // Render first time launch layout
-        setContentView(R.layout.oob_launch);
+        setContentView(R.layout.oob_layout);
 
         mSpinner_Activity = (Spinner) findViewById(R.id.spinner_activity);
         mEditText_Age = (EditText) findViewById(R.id.editText_age);
@@ -144,7 +155,11 @@ public class MainActivity extends ActionBarActivity {
 
                     int BMR = (int) (10* weightKG + 6.25 * heightCM - 5 * age + constant);
                     int maintenanceCals = (int) (BMR * Double.parseDouble(getResources().getStringArray(R.array.activity_value)[mSpinner_Activity.getSelectedItemPosition()]));
-                    loadMainPage(BMR, maintenanceCals);
+
+                    mEditor.putInt(USER_BMR, BMR);
+                    mEditor.putInt(USER_CAL_MAINT, maintenanceCals);
+                    mEditor.commit();
+                    loadSummaryPage();
                 }
                 else{
                     displayMissingFieldToast();
@@ -174,28 +189,13 @@ public class MainActivity extends ActionBarActivity {
         });
     }
 
-    private void loadMainPage(int BMR, int maintenanceCal){
-        SharedPreferences settings = getPreferences(Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putInt(mBMR, BMR);
-
-        setContentView(R.layout.actviity_main);
-        TextView textView_BMR = (TextView) findViewById(R.id.textView_oob);
-        String caloriesText = String.format("BMR: " + BMR +
-                "\n"+ "You need %d calories/day to maintain your weight" +
-                "\nYou need %d calories/day to lose 1 lb per week" +
-                "\nYou need %d calories/day to lose 2 lb per week" +
-                "\nYou need %d calories/day to gain 1 lb per week" +
-                "\nYou need %d calories/day to gain 2 lb per week",
-
-                new Object[]{new Integer(maintenanceCal),
-                            new Integer((int) (maintenanceCal*MAINT_TO_LOSE1)),
-                            new Integer((int) (maintenanceCal*MAINT_TO_LOSE2)),
-                            new Integer((int) (maintenanceCal*MAINT_TO_GAIN1)),
-                            new Integer((int) (maintenanceCal*MAINT_TO_GAIN2))
-                            }
-        );
-        textView_BMR.setText(caloriesText);
+    /***
+     * Loads the layout to display the user's calculated caloric needs.
+     * This summary can be later obtained in the app's settings.
+     */
+    private void loadSummaryPage(){
+        Intent intent = new Intent(getBaseContext(), SummaryActivity.class);
+        startActivity(intent);
     }
 
     @Override
