@@ -36,4 +36,9 @@
         <item>1.9</item>
     </string-array>
 
+    <string-array name="journal_food_entry">
+        <item></item>
+        <item>Add new...</item>
+        <item>Add existing...</item>
+    </string-array>
 </resources>
