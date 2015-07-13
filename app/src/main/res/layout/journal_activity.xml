@@ -79,7 +79,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:text="Check calorie needs."
+            android:text="Check calorie needs"
             android:id="@+id/button_checkSummary"/>
     </RelativeLayout>
 

@@ -3,18 +3,23 @@ package com.example.frank_eltank.macro_meter;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.widget.Toast;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.Buffer;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
  * This class is used by JournalActivity to read saved journal entries per day that
- * are saved as Comma Separated Values (CSV) files.
+ * are saved in files.
  * Then it prepares the entry data to be loaded into JournalActivity
  *
  *
@@ -30,30 +35,30 @@ import java.util.List;
  *
  * Created by Frank on 7/8/2015.
  */
-public class JournalReader {
+public class JournalReadWriter {
 
     private Context mContext;
-    private SharedPreferences mSettings;
-    private SharedPreferences.Editor mEditor;
     private Calendar mCalendar;
 
-    public JournalReader(Context context){
+    public JournalReadWriter(Context context){
         mContext = context;
     }
 
-    public void readCurrentJournal(){
-        mSettings = PreferenceManager.getDefaultSharedPreferences(mContext);
-        mEditor = mSettings.edit();
-
+    public List<String> readCurrentJournal(){
         mCalendar = Calendar.getInstance();
         String journalFileName = ""+mCalendar.get(Calendar.YEAR) +""+mCalendar.get(Calendar.MONTH)+""+mCalendar.get(Calendar.DATE);
+
+        List<String> foodData = new ArrayList<String>();
 
         File journal = new File(mContext.getFilesDir(), journalFileName);
         // Check if the current date journal exists
         if(journal.exists()){
             try {
                 FileReader reader = new FileReader(journal);
+                BufferedReader bufferedReader = new BufferedReader(reader);
             } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -61,10 +66,12 @@ public class JournalReader {
         else{
             try {
                 journal.createNewFile();
+                Toast.makeText(mContext, journal.getAbsolutePath()+" created", Toast.LENGTH_SHORT).show();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+        return foodData;
     }
 
     public void writeJournal(List<String> data, String journalFileName){
