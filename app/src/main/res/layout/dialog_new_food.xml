@@ -13,6 +13,12 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/food_quantity"
+        android:hint="Servings"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/food_calories"
         android:inputType="number"
         android:hint="Calories"/>

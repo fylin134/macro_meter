@@ -78,9 +78,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
             android:text="Check calorie needs"
             android:id="@+id/button_checkSummary"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@id/button_checkSummary"
+            android:text="Clear today's log."
+            android:id="@+id/deleteLog"/>
     </RelativeLayout>
 
 </ScrollView>

@@ -18,7 +18,7 @@ import android.widget.TextView;
 public class NewFoodDialog extends DialogFragment {
 
     public interface NewFoodDialogListener {
-        public void onDialogPositiveClick(DialogFragment dialog, String name, int cals, int fat, int carbs, int protein);
+        public void onDialogPositiveClick(DialogFragment dialog, String name, int quant, int cals, int fat, int carbs, int protein);
         public void onDialogNegativeClick(DialogFragment dialog);
     }
 
@@ -43,6 +43,7 @@ public class NewFoodDialog extends DialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View v = inflater.inflate(R.layout.dialog_new_food, null);
         final TextView name = (TextView) v.findViewById(R.id.food_name);
+        final TextView quantity = (TextView) v.findViewById(R.id.food_quantity);
         final TextView calories = (TextView) v.findViewById(R.id.food_calories);
         final TextView fats = (TextView) v.findViewById(R.id.food_fat);
         final TextView carbs = (TextView) v.findViewById(R.id.food_carbs);
@@ -52,8 +53,9 @@ public class NewFoodDialog extends DialogFragment {
                 .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mListener.onDialogPositiveClick(NewFoodDialog.this, name.getText().toString(), Integer.parseInt(calories.getText().toString()),
-                                Integer.parseInt(fats.getText().toString()), Integer.parseInt(carbs.getText().toString()), Integer.parseInt(proteins.getText().toString()));
+                        mListener.onDialogPositiveClick(NewFoodDialog.this, name.getText().toString(), Integer.parseInt(quantity.getText().toString()),
+                                Integer.parseInt(calories.getText().toString()), Integer.parseInt(fats.getText().toString()),
+                                Integer.parseInt(carbs.getText().toString()), Integer.parseInt(proteins.getText().toString()));
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener(){

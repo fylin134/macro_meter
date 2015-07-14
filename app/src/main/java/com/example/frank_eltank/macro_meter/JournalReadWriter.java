@@ -51,11 +51,19 @@ public class JournalReadWriter {
         List<String> foodData = new ArrayList<String>();
 
         File journal = new File(mContext.getFilesDir(), journalFileName);
+        Toast.makeText(mContext, journal.getPath(), Toast.LENGTH_SHORT).show();
         // Check if the current date journal exists
         if(journal.exists()){
             try {
                 FileReader reader = new FileReader(journal);
                 BufferedReader bufferedReader = new BufferedReader(reader);
+                String line = bufferedReader.readLine();
+                if(line != null){
+                    String[] data = line.split(",");
+                    for(String s : data){
+                        foodData.add(s);
+                    }
+                }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -74,12 +82,15 @@ public class JournalReadWriter {
         return foodData;
     }
 
-    public void writeJournal(List<String> data, String journalFileName){
+    public void writeJournal(List<String> data){
+        mCalendar = Calendar.getInstance();
+        String journalFileName = ""+mCalendar.get(Calendar.YEAR) +""+mCalendar.get(Calendar.MONTH)+""+mCalendar.get(Calendar.DATE);
         File journal = new File(mContext.getFilesDir(), journalFileName);
+        Toast.makeText(mContext, journal.getPath(), Toast.LENGTH_SHORT).show();
         try {
             FileWriter writer = new FileWriter(journal);
             for(String s : data){
-                writer.write(s);
+                writer.write(s+",");
             }
             writer.flush();
             writer.close();
