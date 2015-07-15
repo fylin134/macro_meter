@@ -1,8 +1,6 @@
 package com.example.frank_eltank.macro_meter;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -11,10 +9,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -44,6 +40,12 @@ public class JournalReadWriter {
         mContext = context;
     }
 
+    /***
+     * Reads the entire journal file
+     * @return: a List<String> containing row data
+     *      each String item is equivalent to data in a row -> row#, foodName, quantity
+     *      the journal activity handles the parsing and loading of the read data
+     */
     public List<String> readCurrentJournal(){
         mCalendar = Calendar.getInstance();
         String journalFileName = ""+mCalendar.get(Calendar.YEAR) +""+mCalendar.get(Calendar.MONTH)+""+mCalendar.get(Calendar.DATE);
@@ -51,18 +53,14 @@ public class JournalReadWriter {
         List<String> foodData = new ArrayList<String>();
 
         File journal = new File(mContext.getFilesDir(), journalFileName);
-        Toast.makeText(mContext, journal.getPath(), Toast.LENGTH_SHORT).show();
         // Check if the current date journal exists
         if(journal.exists()){
             try {
                 FileReader reader = new FileReader(journal);
                 BufferedReader bufferedReader = new BufferedReader(reader);
-                String line = bufferedReader.readLine();
-                if(line != null){
-                    String[] data = line.split(",");
-                    for(String s : data){
-                        foodData.add(s);
-                    }
+                String line;
+                while((line = bufferedReader.readLine()) != null){
+                    foodData.add(line);
                 }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -82,16 +80,19 @@ public class JournalReadWriter {
         return foodData;
     }
 
-    public void writeJournal(List<String> data){
+    /***
+     * Writes the row data to file
+     * @param row: the row#
+     * @param name: name of the food
+     * @param quant: number of servings
+     */
+    public void writeJournal(int row, String name, int quant){
         mCalendar = Calendar.getInstance();
         String journalFileName = ""+mCalendar.get(Calendar.YEAR) +""+mCalendar.get(Calendar.MONTH)+""+mCalendar.get(Calendar.DATE);
         File journal = new File(mContext.getFilesDir(), journalFileName);
-        Toast.makeText(mContext, journal.getPath(), Toast.LENGTH_SHORT).show();
         try {
             FileWriter writer = new FileWriter(journal);
-            for(String s : data){
-                writer.write(s+",");
-            }
+            writer.write(""+row+","+name+","+quant+"\n");
             writer.flush();
             writer.close();
         } catch (IOException e) {

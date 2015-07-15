@@ -1,29 +1,25 @@
 package com.example.frank_eltank.macro_meter;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.Gravity;
 import android.view.View;
-import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Stack;
+import java.util.Set;
 
 /**
  * Created by Frank on 7/1/2015.
@@ -38,6 +34,9 @@ public class JournalActivity extends Activity implements NewFoodDialog.NewFoodDi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = settings.edit();
+
         setContentView(R.layout.journal_activity);
 
         // Button to check the calories summary
@@ -62,19 +61,14 @@ public class JournalActivity extends Activity implements NewFoodDialog.NewFoodDi
             }
         });
 
-        loadJournal();
+        initJournal();
     }
 
-    private void loadJournal(){
-        JournalReadWriter reader = new JournalReadWriter(getApplicationContext());
-        List<String> journalData = reader.readCurrentJournal();
-        int journalIndex = 0;
-
+    /***
+     * This function initializes the table layout and all the UI logic associated with it
+     */
+    private void initJournal(){
         mJournal = (TableLayout) findViewById(R.id.journal_table);
-
-        for(String s : journalData){
-            Toast.makeText(getApplicationContext(), ""+s, Toast.LENGTH_SHORT).show();
-        }
 
         // Create the journal entry rows
         for(int i=0; i<30; i++){
@@ -90,42 +84,48 @@ public class JournalActivity extends Activity implements NewFoodDialog.NewFoodDi
                     mealLabel.setTextColor(Color.BLACK);
                     mJournal.addView(mealLabel);
                     break;
-                // Total and Requirements calculations row
+                // Totals Row
                 case 28:
                     TableRow totalRow = (TableRow) (getLayoutInflater().inflate(R.layout.totals_row, null));
                     TextView totalLabel = (TextView) totalRow.getChildAt(0);
                     totalLabel.setText("Totals: ");
                     mJournal.addView(totalRow);
                     break;
+                // Requirements Row
                 case 29:
                     TableRow reqRow = (TableRow) (getLayoutInflater().inflate(R.layout.totals_row, null));
                     TextView requireLabel = (TextView) reqRow.getChildAt(0);
                     requireLabel.setText("Requirements: ");
                     mJournal.addView(reqRow);
                     break;
-                // Editable food entry row
+                // Editable empty food data row
                 default:
                     TableRow row = (TableRow) (getLayoutInflater().inflate(R.layout.table_row, null));
-                    // Generate the empty rows
-                    if(journalData.isEmpty() || journalIndex > journalData.size()){
-                        ((TextView) row.getChildAt(0)).setOnClickListener(getCellOnClickListener(i));
-                    }
-                    else{
-                        for(int j=0; j<6; j++){
-                            ((TextView) row.getChildAt(j)).setText(journalData.get(journalIndex));
-                            journalIndex++;
-                        }
-                    }
+                    // We do +1 because the table has a first child that is the table header
+                    ((TextView) row.getChildAt(0)).setOnClickListener(getCellOnClickListener(i+1));
                     mJournal.addView(row);
                     break;
             }
         }
+        loadJournal();
     }
 
     /***
-     * Listener for a row's  add food spinner selection
-     * @param row: the row # of the selected spinner
-     * @return: OnItemSelectedListener that will call a dialog to add a new food entry
+     * This function actually reads from the saved journal file
+     * and populates the table data
+     */
+    private void loadJournal(){
+        JournalReadWriter reader = new JournalReadWriter(mContext);
+        List<String> foodData = reader.readCurrentJournal();
+
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = settings.edit();
+    }
+
+    /***
+     * Gets an onclicklistener that will pop up the newFoodDialog
+     * @param row: the row# of the cell wishing to attach an onclicklistener
+     * @return: the onclicklistener used by each journal entry row
      */
     private View.OnClickListener getCellOnClickListener(final int row) {
         return new View.OnClickListener() {
@@ -133,11 +133,21 @@ public class JournalActivity extends Activity implements NewFoodDialog.NewFoodDi
             public void onClick(View v) {
                 DialogFragment newFoodDialog = new NewFoodDialog();
                 newFoodDialog.show(mContext.getFragmentManager(), "newfood");
-                editRow = row + 1;
+                editRow = row;
             }
         };
     }
 
+    /***
+     * Callback when submit is clicked in the NewFoodDialog
+     * @param dialog: The dialogfragment triggering this callback
+     * @param name
+     * @param quant
+     * @param cals
+     * @param fat
+     * @param carbs
+     * @param protein
+     */
     @Override
     public void onDialogPositiveClick(DialogFragment dialog, String name, int quant, int cals, int fat, int carbs, int protein){
         // Populating the journal table
@@ -145,25 +155,34 @@ public class JournalActivity extends Activity implements NewFoodDialog.NewFoodDi
         ((TextView) row.getChildAt(0)).setText(name);
         ((TextView) row.getChildAt(0)).setBackgroundResource(R.drawable.table_border);
         ((TextView) row.getChildAt(1)).setText("" + quant);
-        ((TextView) row.getChildAt(2)).setText("" + cals*quant);
-        ((TextView) row.getChildAt(3)).setText("" + fat*quant);
-        ((TextView) row.getChildAt(4)).setText("" + carbs*quant);
-        ((TextView) row.getChildAt(5)).setText("" + protein*quant);
+        ((TextView) row.getChildAt(2)).setText("" + cals * quant);
+        ((TextView) row.getChildAt(3)).setText("" + fat * quant);
+        ((TextView) row.getChildAt(4)).setText("" + carbs * quant);
+        ((TextView) row.getChildAt(5)).setText("" + protein * quant);
 
         mJournal.requestLayout();
 
+
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = settings.edit();
+        Set<String> foodData = new HashSet<String>();
+        foodData.add(""+cals);
+        foodData.add(""+fat);
+        foodData.add(""+carbs);
+        foodData.add(""+protein);
+        editor.putStringSet(name, foodData);
+        editor.commit();
+
         // Write data to file
-        List<String> entryData = new ArrayList<String>();
-        entryData.add(name);
-        entryData.add(""+quant);
-        entryData.add(""+cals);
-        entryData.add(""+fat);
-        entryData.add(""+carbs);
-        entryData.add(""+protein);
         JournalReadWriter writer = new JournalReadWriter(getApplicationContext());
-        writer.writeJournal(entryData);
+        writer.writeJournal(editRow, name, quant);
     }
 
+    /***
+     * Callback to handle a cancel click in the NewFoodDialog
+     * Dismisses the dialog
+     * @param dialog: The dialogfragment triggering this callback
+     */
     @Override
     public void onDialogNegativeClick(DialogFragment dialog){
         TableRow row = (TableRow) mJournal.getChildAt(editRow);

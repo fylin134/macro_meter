@@ -1,7 +1,6 @@
 package com.example.frank_eltank.macro_meter;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -23,12 +22,6 @@ public class OOB_Activity extends Activity {
 
     // User data
     public static final String mFirstTimeLaunch = "mFirstTimeLaunch";
-    /*private String mAge = "mAge";
-    private String mGender = "mGender";
-    private String mWeight = "mWeight";
-    private String mHeightFeet = "mHeightFeet";
-    private String mHeightInch = "mHeightInch";
-    private String mActivity = "mActivity";*/
     public static final String USER_BMR = "mBMR";
     public static final String USER_CAL_MAINT = "mCalMaint";
 
@@ -56,8 +49,6 @@ public class OOB_Activity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //loadFirstLaunchPage();
 
         mSettings = PreferenceManager.getDefaultSharedPreferences(this);
         mEditor = mSettings.edit();
