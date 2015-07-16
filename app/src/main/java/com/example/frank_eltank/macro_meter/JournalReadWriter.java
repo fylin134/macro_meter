@@ -50,7 +50,7 @@ public class JournalReadWriter {
         mCalendar = Calendar.getInstance();
         String journalFileName = ""+mCalendar.get(Calendar.YEAR) +""+mCalendar.get(Calendar.MONTH)+""+mCalendar.get(Calendar.DATE);
 
-        List<String> foodData = new ArrayList<String>();
+        List<String> tableData = new ArrayList<String>();
 
         File journal = new File(mContext.getFilesDir(), journalFileName);
         // Check if the current date journal exists
@@ -60,7 +60,7 @@ public class JournalReadWriter {
                 BufferedReader bufferedReader = new BufferedReader(reader);
                 String line;
                 while((line = bufferedReader.readLine()) != null){
-                    foodData.add(line);
+                    tableData.add(line);
                 }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -77,7 +77,7 @@ public class JournalReadWriter {
                 e.printStackTrace();
             }
         }
-        return foodData;
+        return tableData;
     }
 
     /***
@@ -86,13 +86,13 @@ public class JournalReadWriter {
      * @param name: name of the food
      * @param quant: number of servings
      */
-    public void writeJournal(int row, String name, int quant){
+    public void writeJournal(int row, String name, int quant, int cals, int fat, int carb, int protein){
         mCalendar = Calendar.getInstance();
         String journalFileName = ""+mCalendar.get(Calendar.YEAR) +""+mCalendar.get(Calendar.MONTH)+""+mCalendar.get(Calendar.DATE);
         File journal = new File(mContext.getFilesDir(), journalFileName);
         try {
-            FileWriter writer = new FileWriter(journal);
-            writer.write(""+row+","+name+","+quant+"\n");
+            FileWriter writer = new FileWriter(journal, true);
+            writer.write(""+row+","+name+","+quant+","+cals+","+fat+","+carb+","+protein+"\n");
             writer.flush();
             writer.close();
         } catch (IOException e) {

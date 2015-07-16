@@ -30,6 +30,14 @@ import java.util.Set;
  */
 public class JournalActivity extends Activity implements NewFoodDialog.NewFoodDialogListener{
 
+    final static int COLUMN_INDEX_NAME = 0;
+    final static int COLUMN_INDEX_QUANTITY = 1;
+    final static int COLUMN_INDEX_CALORIES = 2;
+    final static int COLUMN_INDEX_FAT = 3;
+    final static int COLUMN_INDEX_CARB = 4;
+    final static int COLUMN_INDEX_PROTEIN = 5;
+
+
     private Activity mContext;
     private TableLayout mJournal;
     private int editRow;
@@ -91,14 +99,14 @@ public class JournalActivity extends Activity implements NewFoodDialog.NewFoodDi
                 // Totals Row
                 case 28:
                     TableRow totalRow = (TableRow) (getLayoutInflater().inflate(R.layout.totals_row, null));
-                    TextView totalLabel = (TextView) totalRow.getChildAt(0);
+                    TextView totalLabel = (TextView) totalRow.getChildAt(COLUMN_INDEX_NAME);
                     totalLabel.setText("Totals: ");
                     mJournal.addView(totalRow);
                     break;
                 // Requirements Row
                 case 29:
                     TableRow reqRow = (TableRow) (getLayoutInflater().inflate(R.layout.totals_row, null));
-                    TextView requireLabel = (TextView) reqRow.getChildAt(0);
+                    TextView requireLabel = (TextView) reqRow.getChildAt(COLUMN_INDEX_NAME);
                     requireLabel.setText("Requirements: ");
                     mJournal.addView(reqRow);
                     break;
@@ -106,7 +114,7 @@ public class JournalActivity extends Activity implements NewFoodDialog.NewFoodDi
                 default:
                     TableRow row = (TableRow) (getLayoutInflater().inflate(R.layout.table_row, null));
                     // We do +1 because the table has a first child that is the table header
-                    ((TextView) row.getChildAt(0)).setOnClickListener(getCellOnClickListener(i+1));
+                    ((TextView) row.getChildAt(COLUMN_INDEX_NAME)).setOnClickListener(getCellOnClickListener(i+1));
                     mJournal.addView(row);
                     break;
             }
@@ -120,25 +128,27 @@ public class JournalActivity extends Activity implements NewFoodDialog.NewFoodDi
      */
     private void loadJournal(){
         JournalReadWriter reader = new JournalReadWriter(mContext);
-        List<String> foodData = reader.readCurrentJournal();
+        List<String> rowEntry = reader.readCurrentJournal();
 
-        for(String entry : foodData){
-            String[] entryArray = entry.split(",");
-            int rowNum = Integer.parseInt(entryArray[0]);
-            String name = entryArray[1];
-            String quantity = entryArray[2];
-            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-            Object[] entryData = settings.getStringSet(name, null).toArray();
+        for(String rowEntryString : rowEntry){
+            String[] entryValues = rowEntryString.split(",");
+            int rowNum = Integer.parseInt(entryValues[0]);
+            String foodName = entryValues[1];
+            int numServings = Integer.parseInt(entryValues[2]);
+            int numCalories = Integer.parseInt(entryValues[3]);
+            int numFat = Integer.parseInt(entryValues[4]);
+            int numCarbs = Integer.parseInt(entryValues[5]);
+            int numProtein = Integer.parseInt(entryValues[6]);
 
             TableRow row = (TableRow) mJournal.getChildAt(rowNum);
-            ((TextView) row.getChildAt(0)).setText(""+name);
-            ((TextView) row.getChildAt(1)).setText(""+quantity);
-            ((TextView) row.getChildAt(2)).setText(""+entryData[3]);
-            ((TextView) row.getChildAt(3)).setText(""+entryData[2]);
-            ((TextView) row.getChildAt(4)).setText(""+entryData[1]);
-            ((TextView) row.getChildAt(5)).setText(""+entryData[0]);
-
+            ((TextView) row.getChildAt(COLUMN_INDEX_NAME)).setText(foodName);
+            ((TextView) row.getChildAt(COLUMN_INDEX_QUANTITY)).setText(""+numServings);
+            ((TextView) row.getChildAt(COLUMN_INDEX_CALORIES)).setText(""+(numServings*numCalories));
+            ((TextView) row.getChildAt(COLUMN_INDEX_FAT)).setText(""+(numServings*numFat));
+            ((TextView) row.getChildAt(COLUMN_INDEX_CARB)).setText(""+(numServings*numCarbs));
+            ((TextView) row.getChildAt(COLUMN_INDEX_PROTEIN)).setText(""+(numServings*numProtein));
         }
+
     }
 
     /***
@@ -181,20 +191,9 @@ public class JournalActivity extends Activity implements NewFoodDialog.NewFoodDi
 
         mJournal.requestLayout();
 
-
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = settings.edit();
-        Set<String> foodData = new HashSet<String>();
-        foodData.add(""+cals);
-        foodData.add(""+fat);
-        foodData.add(""+carbs);
-        foodData.add(""+protein);
-        editor.putStringSet(name, foodData);
-        editor.commit();
-
         // Write data to file
         JournalReadWriter writer = new JournalReadWriter(getApplicationContext());
-        writer.writeJournal(editRow, name, quant);
+        writer.writeJournal(editRow, name, quant, cals, fat , carbs, protein);
     }
 
     /***
