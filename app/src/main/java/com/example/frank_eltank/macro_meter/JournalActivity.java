@@ -14,11 +14,15 @@ import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -118,8 +122,23 @@ public class JournalActivity extends Activity implements NewFoodDialog.NewFoodDi
         JournalReadWriter reader = new JournalReadWriter(mContext);
         List<String> foodData = reader.readCurrentJournal();
 
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = settings.edit();
+        for(String entry : foodData){
+            String[] entryArray = entry.split(",");
+            int rowNum = Integer.parseInt(entryArray[0]);
+            String name = entryArray[1];
+            String quantity = entryArray[2];
+            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+            Object[] entryData = settings.getStringSet(name, null).toArray();
+
+            TableRow row = (TableRow) mJournal.getChildAt(rowNum);
+            ((TextView) row.getChildAt(0)).setText(""+name);
+            ((TextView) row.getChildAt(1)).setText(""+quantity);
+            ((TextView) row.getChildAt(2)).setText(""+entryData[3]);
+            ((TextView) row.getChildAt(3)).setText(""+entryData[2]);
+            ((TextView) row.getChildAt(4)).setText(""+entryData[1]);
+            ((TextView) row.getChildAt(5)).setText(""+entryData[0]);
+
+        }
     }
 
     /***
@@ -188,5 +207,9 @@ public class JournalActivity extends Activity implements NewFoodDialog.NewFoodDi
         TableRow row = (TableRow) mJournal.getChildAt(editRow);
         Spinner spinner = (Spinner) row.getChildAt(0);
         spinner.setSelection(0);
+    }
+
+    private void toastMe(String text){
+        Toast.makeText(mContext, text, Toast.LENGTH_SHORT).show();
     }
 }
