@@ -36,6 +36,8 @@ public class JournalReadWriter {
     private Context mContext;
     private Calendar mCalendar;
 
+    public final static String DICTIONARY_FILE_NAME = "FoodDictionary";
+
     public JournalReadWriter(Context context){
         mContext = context;
     }
@@ -98,5 +100,48 @@ public class JournalReadWriter {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void writeDictionary(String name, int cals, int fat, int carb, int protein){
+        File journal = new File(mContext.getFilesDir(), DICTIONARY_FILE_NAME);
+        try {
+            FileWriter writer = new FileWriter(journal, true);
+            writer.write(""+name+","+cals+","+fat+","+carb+","+protein+"\n");
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<String> readDictionary(){
+        List<String> tableData = new ArrayList<String>();
+
+        File journal = new File(mContext.getFilesDir(), DICTIONARY_FILE_NAME);
+        // Check if the current date journal exists
+        if(journal.exists()){
+            try {
+                FileReader reader = new FileReader(journal);
+                BufferedReader bufferedReader = new BufferedReader(reader);
+                String line;
+                while((line = bufferedReader.readLine()) != null){
+                    tableData.add(line);
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        // Create an empty journal file
+        else{
+            try {
+                journal.createNewFile();
+                Toast.makeText(mContext, journal.getAbsolutePath()+" created", Toast.LENGTH_SHORT).show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return tableData;
     }
 }

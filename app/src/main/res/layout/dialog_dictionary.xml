@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/dialog_dictionary_table"
+        android:backgroundTint="@color/material_deep_teal_500">
+    </TableLayout>
+
+
+    <NumberPicker
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/dialog_dictionary_table"
+        android:layout_marginLeft="50dp"
+        android:id="@+id/numberPicker"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="servings consumed"
+        android:id="@+id/textView"
+        android:layout_below="@+id/dialog_dictionary_table"
+        android:layout_toRightOf="@+id/numberPicker"
+        android:layout_marginLeft="30dp"
+        android:layout_alignBottom="@+id/numberPicker"/>
+
+
+</RelativeLayout>

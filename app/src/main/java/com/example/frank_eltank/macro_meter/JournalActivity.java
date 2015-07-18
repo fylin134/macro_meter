@@ -1,7 +1,9 @@
 package com.example.frank_eltank.macro_meter;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -10,25 +12,20 @@ import android.preference.PreferenceManager;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
-
 import java.io.File;
 import java.util.Calendar;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by Frank on 7/1/2015.
  */
-public class JournalActivity extends Activity implements NewFoodDialog.NewFoodDialogListener{
+public class JournalActivity extends Activity implements NewFoodDialog.NewFoodDialogListener,
+                                                            DictionaryDialog.DictionaryDialogListener{
 
     final static int COLUMN_INDEX_NAME = 0;
     final static int COLUMN_INDEX_QUANTITY = 1;
@@ -61,14 +58,24 @@ public class JournalActivity extends Activity implements NewFoodDialog.NewFoodDi
             }
         });
 
-        //DEBUG BUTTON
+        //Delete Journal Button
         Button deleteButton = (Button) findViewById(R.id.deleteLog);
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Calendar mCalendar = Calendar.getInstance();
-                String journalFileName = ""+mCalendar.get(Calendar.YEAR) +""+mCalendar.get(Calendar.MONTH)+""+mCalendar.get(Calendar.DATE);
+                String journalFileName = "" + mCalendar.get(Calendar.YEAR) + "" + mCalendar.get(Calendar.MONTH) + "" + mCalendar.get(Calendar.DATE);
                 File journal = new File(mContext.getFilesDir(), journalFileName);
+                journal.delete();
+            }
+        });
+
+        // Delete Dictionary Button
+        Button deleteDictButton = (Button) findViewById(R.id.deleteDictionary);
+        deleteDictButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                File journal = new File(mContext.getFilesDir(), JournalReadWriter.DICTIONARY_FILE_NAME);
                 journal.delete();
             }
         });
@@ -112,7 +119,7 @@ public class JournalActivity extends Activity implements NewFoodDialog.NewFoodDi
                     break;
                 // Editable empty food data row
                 default:
-                    TableRow row = (TableRow) (getLayoutInflater().inflate(R.layout.table_row, null));
+                    TableRow row = (TableRow) (getLayoutInflater().inflate(R.layout.journal_row, null));
                     // We do +1 because the table has a first child that is the table header
                     ((TextView) row.getChildAt(COLUMN_INDEX_NAME)).setOnClickListener(getCellOnClickListener(i+1));
                     mJournal.addView(row);
@@ -160,9 +167,25 @@ public class JournalActivity extends Activity implements NewFoodDialog.NewFoodDi
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DialogFragment newFoodDialog = new NewFoodDialog();
-                newFoodDialog.show(mContext.getFragmentManager(), "newfood");
-                editRow = row;
+                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                builder.setTitle("New or existing entry?")
+                        .setPositiveButton("New", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                DialogFragment newFoodDialog = new NewFoodDialog();
+                                newFoodDialog.show(mContext.getFragmentManager(), "newfood");
+                                editRow = row;
+                            }
+                        })
+                        .setNegativeButton("Existing", new DialogInterface.OnClickListener(){
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                DialogFragment dictionaryDialog = new DictionaryDialog();
+                                dictionaryDialog.show(mContext.getFragmentManager(), "dictionary");
+                                editRow = row;
+                            }
+                        })
+                        .create().show();
             }
         };
     }
@@ -194,18 +217,11 @@ public class JournalActivity extends Activity implements NewFoodDialog.NewFoodDi
         // Write data to file
         JournalReadWriter writer = new JournalReadWriter(getApplicationContext());
         writer.writeJournal(editRow, name, quant, cals, fat , carbs, protein);
+        writer.writeDictionary(name, cals, fat, carbs, protein);
     }
 
-    /***
-     * Callback to handle a cancel click in the NewFoodDialog
-     * Dismisses the dialog
-     * @param dialog: The dialogfragment triggering this callback
-     */
     @Override
     public void onDialogNegativeClick(DialogFragment dialog){
-        TableRow row = (TableRow) mJournal.getChildAt(editRow);
-        Spinner spinner = (Spinner) row.getChildAt(0);
-        spinner.setSelection(0);
     }
 
     private void toastMe(String text){

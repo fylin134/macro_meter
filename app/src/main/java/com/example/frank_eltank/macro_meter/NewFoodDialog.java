@@ -31,7 +31,7 @@ public class NewFoodDialog extends DialogFragment {
         }
         catch (ClassCastException e){
             // The activity doesn't interface the interface
-            throw new ClassCastException("Fffff");
+            throw new ClassCastException("Activity does not implement NewFoodDialog!");
         }
     }
 
