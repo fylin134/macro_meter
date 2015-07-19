@@ -38,13 +38,15 @@ public class JournalActivity extends Activity implements NewFoodDialog.NewFoodDi
     private Activity mContext;
     private TableLayout mJournal;
     private int editRow;
+    private int mCurrentCalories = 0;
+    private int mCurrentFats = 0;
+    private int mCurrentCarbs = 0;
+    private int mCurrentProteins = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = settings.edit();
 
         setContentView(R.layout.journal_activity);
 
@@ -106,15 +108,17 @@ public class JournalActivity extends Activity implements NewFoodDialog.NewFoodDi
                 // Totals Row
                 case 28:
                     TableRow totalRow = (TableRow) (getLayoutInflater().inflate(R.layout.totals_row, null));
-                    TextView totalLabel = (TextView) totalRow.getChildAt(COLUMN_INDEX_NAME);
-                    totalLabel.setText("Totals: ");
+                    ((TextView) totalRow.getChildAt(COLUMN_INDEX_NAME)).setText("Totals: ");
                     mJournal.addView(totalRow);
                     break;
                 // Requirements Row
                 case 29:
                     TableRow reqRow = (TableRow) (getLayoutInflater().inflate(R.layout.totals_row, null));
-                    TextView requireLabel = (TextView) reqRow.getChildAt(COLUMN_INDEX_NAME);
-                    requireLabel.setText("Requirements: ");
+                    ((TextView) reqRow.getChildAt(COLUMN_INDEX_NAME)).setText("Requirements: ");
+                    ((TextView) reqRow.getChildAt(COLUMN_INDEX_CALORIES)).setText("Requirements: ");
+                    ((TextView) reqRow.getChildAt(COLUMN_INDEX_FAT)).setText("Requirements: ");
+                    ((TextView) reqRow.getChildAt(COLUMN_INDEX_CARB)).setText("Requirements: ");
+                    ((TextView) reqRow.getChildAt(COLUMN_INDEX_PROTEIN)).setText("Requirements: ");
                     mJournal.addView(reqRow);
                     break;
                 // Editable empty food data row
@@ -147,14 +151,27 @@ public class JournalActivity extends Activity implements NewFoodDialog.NewFoodDi
             int numCarbs = Integer.parseInt(entryValues[5]);
             int numProtein = Integer.parseInt(entryValues[6]);
 
+            mCurrentCalories = mCurrentCalories + numCalories * numServings;
+            mCurrentCarbs = mCurrentCarbs + numCarbs * numServings;
+            mCurrentFats = mCurrentFats + numFat * numServings;
+            mCurrentProteins = mCurrentProteins + numProtein* numServings;
+
             TableRow row = (TableRow) mJournal.getChildAt(rowNum);
             ((TextView) row.getChildAt(COLUMN_INDEX_NAME)).setText(foodName);
-            ((TextView) row.getChildAt(COLUMN_INDEX_QUANTITY)).setText(""+numServings);
+            ((TextView) row.getChildAt(COLUMN_INDEX_NAME)).setBackgroundResource(R.drawable.table_border);
+            ((TextView) row.getChildAt(COLUMN_INDEX_QUANTITY)).setText("" + numServings);
             ((TextView) row.getChildAt(COLUMN_INDEX_CALORIES)).setText(""+(numServings*numCalories));
             ((TextView) row.getChildAt(COLUMN_INDEX_FAT)).setText(""+(numServings*numFat));
             ((TextView) row.getChildAt(COLUMN_INDEX_CARB)).setText(""+(numServings*numCarbs));
             ((TextView) row.getChildAt(COLUMN_INDEX_PROTEIN)).setText(""+(numServings*numProtein));
         }
+
+        //populate running totals
+        TableRow row = (TableRow) mJournal.getChildAt(mJournal.getChildCount()-2);
+        ((TextView) row.getChildAt(COLUMN_INDEX_CALORIES)).setText(""+mCurrentCalories);
+        ((TextView) row.getChildAt(COLUMN_INDEX_FAT)).setText(""+mCurrentFats);
+        ((TextView) row.getChildAt(COLUMN_INDEX_CARB)).setText(""+mCurrentCarbs);
+        ((TextView) row.getChildAt(COLUMN_INDEX_PROTEIN)).setText(""+mCurrentProteins);
 
     }
 
@@ -216,8 +233,10 @@ public class JournalActivity extends Activity implements NewFoodDialog.NewFoodDi
 
         // Write data to file
         JournalReadWriter writer = new JournalReadWriter(getApplicationContext());
-        writer.writeJournal(editRow, name, quant, cals, fat , carbs, protein);
-        writer.writeDictionary(name, cals, fat, carbs, protein);
+        writer.writeJournal(editRow, name, quant, cals, fat, carbs, protein);
+        if(!writer.dictionaryContains(name)){
+            writer.writeDictionary(name, cals, fat, carbs, protein);
+        }
     }
 
     @Override

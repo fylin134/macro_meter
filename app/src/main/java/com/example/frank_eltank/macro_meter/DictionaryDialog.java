@@ -23,12 +23,12 @@ import java.util.List;
 public class DictionaryDialog extends DialogFragment {
 
     private boolean mHasSelected = false;
-    private int mSelectedRow = 0;
     private TableRow mSelectedTableRow = null;
+    private TableLayout mDictable;
 
     public interface DictionaryDialogListener {
-        public void onDialogPositiveClick(DialogFragment dialog, String name,int quant, int cals, int fat, int carbs, int protein);
-        public void onDialogNegativeClick(DialogFragment dialog);
+        void onDialogPositiveClick(DialogFragment dialog, String name,int quant, int cals, int fat, int carbs, int protein);
+        void onDialogNegativeClick(DialogFragment dialog);
     }
 
     DictionaryDialogListener mListener;
@@ -52,7 +52,7 @@ public class DictionaryDialog extends DialogFragment {
         View v = inflater.inflate(R.layout.dialog_dictionary, null);
         JournalReadWriter reader = new JournalReadWriter(getActivity());
         List<String> dictionaryRows  = reader.readDictionary();
-        final TableLayout dictable = (TableLayout) v.findViewById(R.id.dialog_dictionary_table);
+        mDictable = (TableLayout) v.findViewById(R.id.dialog_dictionary_table);
         final NumberPicker numberPicker = (NumberPicker) v.findViewById(R.id.numberPicker);
         numberPicker.setMaxValue(100);
         numberPicker.setMinValue(1);
@@ -67,7 +67,7 @@ public class DictionaryDialog extends DialogFragment {
             }
             row.setOnClickListener(getTableRowClickListener(row));
 
-            dictable.addView(row);
+            mDictable.addView(row);
         }
 
         builder.setView(v)
@@ -90,6 +90,7 @@ public class DictionaryDialog extends DialogFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         DictionaryDialog.this.getDialog().cancel();
+                        mListener.onDialogNegativeClick(DictionaryDialog.this);
                     }
                 });
 
@@ -100,6 +101,9 @@ public class DictionaryDialog extends DialogFragment {
         return new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+                for(int i=0; i<mDictable.getChildCount(); i++){
+                    mDictable.getChildAt(i).setBackgroundColor(0);
+                }
                 self.setBackgroundColor(Color.CYAN);
                 mHasSelected = true;
                 mSelectedTableRow = self;

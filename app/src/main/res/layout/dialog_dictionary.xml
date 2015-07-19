@@ -25,10 +25,11 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="servings consumed"
         android:id="@+id/textView"
-        android:layout_below="@+id/dialog_dictionary_table"
+        android:layout_alignBottom="@+id/numberPicker"
         android:layout_toRightOf="@+id/numberPicker"
-        android:layout_marginLeft="30dp"
-        android:layout_alignBottom="@+id/numberPicker"/>
+        android:layout_toEndOf="@+id/numberPicker"
+        android:layout_marginBottom="48dp"
+        android:layout_marginLeft="50dp"/>
 
 
 </RelativeLayout>

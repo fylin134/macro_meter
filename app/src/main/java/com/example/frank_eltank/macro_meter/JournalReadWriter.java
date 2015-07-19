@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * This class is used by JournalActivity to read saved journal entries per day that
@@ -143,5 +144,15 @@ public class JournalReadWriter {
             }
         }
         return tableData;
+    }
+
+    public boolean dictionaryContains(String name){
+        List<String> entries = readDictionary();
+        for(String food : entries){
+            if(food.split(",")[0].equals(name)){
+                return true;
+            }
+        }
+        return false;
     }
 }
